@@ -33,14 +33,14 @@ namespace MyBib
         public void WriteCustomerList()
         {
 
-            StreamWriter writer = new StreamWriter(@"..\..\CustomerListTest.txt", false);
+            StreamWriter writer = new StreamWriter(@"..\..\CustomerList.txt", false);
 
-          
+
             foreach (Customer customer in this.customerList)
             {
                 if (customer != null)
                 {
-                    writer.WriteLine(customer.ToString());
+                    writer.WriteLine(Encode(customer.ToString()));
                 }
             }
 
@@ -49,20 +49,21 @@ namespace MyBib
 
         public void ReadCustomerList()
         {
-            if (File.Exists(@"..\..\CustomerListTest.txt"))
+            if (File.Exists(@"..\..\CustomerList.txt"))
             {
-                StreamReader reader = new StreamReader(@"..\..\CustomerListTest.txt");
+                StreamReader reader = new StreamReader(@"..\..\CustomerList.txt");
+
                 string[] line = new string[0];
                 int i = 0;
 
 
                 while (reader.Peek() > -1)
                 {
-                    
-                        Array.Resize(ref line, line.Length + 1);
-                        line[line.Length - 1] = reader.ReadLine();
-                        i++;
-                    
+
+                    Array.Resize(ref line, line.Length + 1);
+                    line[line.Length - 1] = Decode(reader.ReadLine());
+                    i++;
+
                 }
 
                 reader.Close();
@@ -71,26 +72,37 @@ namespace MyBib
                 for (int j = 0; j < i; j++)
                 {
                     string[] split = line[j].Split(';');
-                    AddNewCustomer(new Customer(split[1], split[2], split[3], Convert.ToDouble(split[4]),  Convert.ToInt32(split[0]), Convert.ToDateTime(split[5])));
+                    AddNewCustomer(new Customer(split[1], split[2], split[3], Convert.ToDouble(split[4]), Convert.ToInt32(split[0]), Convert.ToDateTime(split[5])));
                 }
             }
         }
 
         public void ChangedCustomer(Customer customerchanged)
+        {
+            int custnumr = customerchanged.CustNum;
+            for (int i = 0; i < customerList.Length; i++)
+            {
+                if (customerList[i].CustNum == customerchanged.CustNum)
                 {
-                    int custnumr = customerchanged.CustNum;
-                    for (int i = 0; i < customerList.Length; i++)
-                    {
-                        if (customerList[i].CustNum == customerchanged.CustNum)
-                        {
-                            customerList[i] = customerchanged;
-                            break;
-                        }
-                    }
+                    customerList[i] = customerchanged;
+                    break;
                 }
-            
+            }
+        }
 
-                 
+        public string Encode(string str)
+        {
+            byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(str);
+            return Convert.ToBase64String(encbuff);
+        }
+
+        public string Decode(string str)
+        {
+            byte[] decbuff = Convert.FromBase64String(str);
+            return System.Text.Encoding.UTF8.GetString(decbuff);
+        }
+
+
 
         public Customer [] Data()
         {

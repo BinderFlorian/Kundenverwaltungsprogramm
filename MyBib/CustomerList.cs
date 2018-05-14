@@ -33,14 +33,14 @@ namespace MyBib
         public void WriteCustomerList()
         {
 
-            StreamWriter writer = new StreamWriter(@"..\..\CustomerList.txt",false, Encoding.UTF32);
+            StreamWriter writer = new StreamWriter(@"..\..\CustomerList.txt",false);
 
           
             foreach (Customer customer in this.customerList)
             {
                 if (customer != null)
                 {
-                    writer.WriteLine(customer.ToString());
+                    writer.WriteLine(Encode(customer.ToString()));
                 }
             }
 
@@ -51,7 +51,7 @@ namespace MyBib
         {
             if (File.Exists(@"..\..\CustomerList.txt"))
             {
-                StreamReader reader = new StreamReader(@"..\..\CustomerList.txt", Encoding.UTF32);
+                StreamReader reader = new StreamReader(@"..\..\CustomerList.txt");
 
                 string[] line = new string[0];
                 int i = 0;
@@ -61,7 +61,7 @@ namespace MyBib
                 {
                     
                         Array.Resize(ref line, line.Length + 1);
-                        line[line.Length - 1] = reader.ReadLine();
+                        line[line.Length - 1] = Decode(reader.ReadLine());
                         i++;
                     
                 }
@@ -89,9 +89,19 @@ namespace MyBib
                         }
                     }
                 }
-            
 
-                 
+        public string Encode(string str)
+        {
+            byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(str);
+            return Convert.ToBase64String(encbuff);
+        }
+
+        public string Decode(string str)
+        {
+            byte[] decbuff = Convert.FromBase64String(str);
+            return System.Text.Encoding.UTF8.GetString(decbuff);
+        }
+
 
         public Customer [] Data()
         {
